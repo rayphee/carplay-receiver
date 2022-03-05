@@ -11,7 +11,9 @@ from link import Error
 import threading, os
 import mpv
 import kivy
+from kivy.app import App
 from kivy.uix.widget import Widget
+from kivy.properties import ObjectProperty
 
 class KeyEvent(IntEnum):
 	BUTTON_SIRI = 5

@@ -14,8 +14,10 @@ import time
 import queue
 import os
 import struct
+import kivy
+from kivy.app import App
 
-class CarPlayReceiver:
+class CarPlayReceiver(App):
     class _Decoder(decoder.Decoder):
         def __init__(self, owner):
             super().__init__()
