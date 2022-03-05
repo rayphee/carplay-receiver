@@ -16,8 +16,15 @@ import os
 import struct
 import kivy
 from kivy.app import App
+from kivy.uixx.widget import Widget
 
 class CarPlayReceiver(App):
+    class _Touch(Widget):
+        def __init__(self, owner):
+            super().__init__()
+            self._owner = owner
+        def on_touch_down(self, touch):
+            print(touch.pos)
     class _Decoder(decoder.Decoder):
         def __init__(self, owner):
             super().__init__()
@@ -27,8 +34,6 @@ class CarPlayReceiver(App):
             self._owner.connection.send_key_event(event)
             if event == decoder.KeyEvent.BUTTON_SELECT_DOWN:
                 self._owner.connection.send_key_event(decoder.KeyEvent.BUTTON_SELECT_UP)
-        def on_touch_down(self, touch):
-            print(touch.pos)
     class _AudioDecoder(audiodecoder.AudioDecoder):
         def __init__(self, owner):
             super().__init__()
@@ -66,6 +71,7 @@ class CarPlayReceiver(App):
         self._disconnect()
         # self.server = self._Server(self)
         self.decoder = self._Decoder(self)
+        self.touch = self._Touch(self)
         self.audio_decoder = self._AudioDecoder(self)
         self.heartbeat = Thread(target=self._heartbeat_thread)
         self.heartbeat.start()

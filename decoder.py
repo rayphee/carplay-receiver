@@ -10,10 +10,6 @@ from os import truncate
 from link import Error
 import threading, os
 import mpv
-import kivy
-from kivy.app import App
-from kivy.uix.widget import Widget
-from kivy.properties import ObjectProperty
 
 class KeyEvent(IntEnum):
 	BUTTON_SIRI = 5
@@ -28,7 +24,7 @@ class KeyEvent(IntEnum):
 	BUTTON_PAUSE = 202
 	BUTTON_NEXT_TRACK = 204
 	BUTTON_PREV_TRACK = 205
-class Decoder(Widget):
+class Decoder:
 	class _Thread(threading.Thread):
 		def __init__(self, owner):
 			super().__init__()
@@ -111,9 +107,6 @@ class Decoder(Widget):
 
 	def on_key_event(self,event):
 		"""Callback for when a key event is received from the video player [called from a worker thread]."""
-
-	def on_touch_down(self, touch):
-		"""Callback for touch events"""
 
 	def log(self, loglevel, component, message):
 		print('[{}] {}: {}'.format(loglevel, component, message))
