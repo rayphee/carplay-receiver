@@ -110,5 +110,8 @@ class Decoder(Widget):
 	def on_key_event(self,event):
 		"""Callback for when a key event is received from the video player [called from a worker thread]."""
 
+	def on_touch_down(self, touch):
+		"""Callback for touch events"""
+
 	def log(self, loglevel, component, message):
 		print('[{}] {}: {}'.format(loglevel, component, message))
