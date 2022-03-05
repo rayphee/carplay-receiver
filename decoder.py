@@ -10,6 +10,8 @@ from os import truncate
 from link import Error
 import threading, os
 import mpv
+import kivy
+from kivy.uix.widget import Widget
 
 class KeyEvent(IntEnum):
 	BUTTON_SIRI = 5
@@ -24,7 +26,7 @@ class KeyEvent(IntEnum):
 	BUTTON_PAUSE = 202
 	BUTTON_NEXT_TRACK = 204
 	BUTTON_PREV_TRACK = 205
-class Decoder:
+class Decoder(Widget):
 	class _Thread(threading.Thread):
 		def __init__(self, owner):
 			super().__init__()
