@@ -14,8 +14,6 @@ import time
 import queue
 import os
 import struct
-import kivy
-from kivy.uix.widget import Widget
 
 class CarPlayReceiver:
     class _Decoder(decoder.Decoder):
@@ -27,10 +25,6 @@ class CarPlayReceiver:
             self._owner.connection.send_key_event(event)
             if event == decoder.KeyEvent.BUTTON_SELECT_DOWN:
                 self._owner.connection.send_key_event(decoder.KeyEvent.BUTTON_SELECT_UP)
-    class _Kivy(Widget):
-        def __init__(self, owner):
-            super().__init__()
-            self._owner = owner
         def on_touch_down(self, touch):
             print(touch.pos)
     class _AudioDecoder(audiodecoder.AudioDecoder):
