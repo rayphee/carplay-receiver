@@ -105,8 +105,8 @@ class Open(Message):
     def __init__(self):
         super().__init__(self.msgtype)
         # Some default values to use
-        self.width = 800
-        self.height = 600
+        self.width = 1920
+        self.height = 720
         self.videoFrameRate = 60
         self.format = 5
         self.packetMax = 49152

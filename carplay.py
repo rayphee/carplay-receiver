@@ -14,6 +14,8 @@ import time
 import queue
 import os
 import struct
+import kivy
+from kivy.uix.widget import Widget
 
 class CarPlayReceiver:
     class _Decoder(decoder.Decoder):
@@ -25,6 +27,12 @@ class CarPlayReceiver:
             self._owner.connection.send_key_event(event)
             if event == decoder.KeyEvent.BUTTON_SELECT_DOWN:
                 self._owner.connection.send_key_event(decoder.KeyEvent.BUTTON_SELECT_UP)
+    class _Kivy(Widget):
+        def __init__(self, owner):
+            super().__init__()
+            self._owner = owner
+        def on_touch_down(self, touch):
+            print(touch.pos)
     class _AudioDecoder(audiodecoder.AudioDecoder):
         def __init__(self, owner):
             super().__init__()
@@ -97,9 +105,16 @@ class CarPlayReceiver:
             mcVal = struct.pack("<L",input1)
             keys._setdata(mcVal)            
             caller.connection.send_message(keys)
+    def _multitouch_thread(self, caller):
+        pass
+        # while True:
+        #     touch_input = multitouch.input()
+        #     caller.connection.send_message(touch_input)
     def run(self):
         self.keylistener = Thread(target=self._keylistener_thread, args=(self,))
+        self.multitouch = Thread(target=self._multitouch_thread, args=(self,))
         self.keylistener.start()
+        self.multitouch.start()
         while True:
             # First task: look for USB device
             while self.connection is None:
