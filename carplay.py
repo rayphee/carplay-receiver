@@ -16,7 +16,7 @@ import os
 import struct
 import kivy
 from kivy.app import App
-from kivy.uixx.widget import Widget
+from kivy.uix.widget import Widget
 
 class CarPlayReceiver(App):
     class _Touch(Widget):
@@ -75,6 +75,9 @@ class CarPlayReceiver(App):
         self.audio_decoder = self._AudioDecoder(self)
         self.heartbeat = Thread(target=self._heartbeat_thread)
         self.heartbeat.start()
+    def build(self):
+        touch_layer = self._Touch()
+        return touch_layer
     def _connected(self):
         print("Connected!")
         self.started = True
@@ -82,6 +85,7 @@ class CarPlayReceiver(App):
         self.audio_decoder.stop()
         self.decoder = self._Decoder(self)
         self.audio_decoder = self._AudioDecoder(self)
+        self.touch = self._Touch(self)
     def _disconnect(self):
         if hasattr(self, "connection"):
             if self.connection is None:
