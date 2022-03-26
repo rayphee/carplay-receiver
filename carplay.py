@@ -110,9 +110,9 @@ class CarPlayReceiver:
             mcVal = struct.pack("<L",input1)
             keys._setdata(mcVal)            
             caller.connection.send_message(keys)
-    def _multitouch_thread(self, caller):
+    async def _multitouch_thread(self, caller):
         while True:
-            mt_input = caller.queue.get()
+            mt_input = await caller.queue.get()
             if mt_input is not None:
                 print(mt_input.pos)
         pass
