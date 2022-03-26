@@ -20,8 +20,12 @@ from kivy.app import App, async_runTouchApp
 from kivy.uix.widget import Widget
 
 class TouchLayer(Widget):
+    def __init__(self, mt_queue):
+        self.queue = mt_queue
+
     def on_touch_down(self, touch):
-        print(touch.pos)
+        self.queue.put(touch)
+        # print(touch.pos)
 
 class CarPlayReceiver:
     class _Decoder(decoder.Decoder):
@@ -66,12 +70,13 @@ class CarPlayReceiver:
                 
         def on_error(self, error):
             self._owner._disconnect()
-    def __init__(self):
+    def __init__(self, mt_queue):
         self._disconnect()
         # self.server = self._Server(self)
         self.decoder = self._Decoder(self)
         self.audio_decoder = self._AudioDecoder(self)
         self.heartbeat = Thread(target=self._heartbeat_thread)
+        self.queue = mt_queue
         self.heartbeat.start()
     def _connected(self):
         print("Connected!")
@@ -106,6 +111,10 @@ class CarPlayReceiver:
             keys._setdata(mcVal)            
             caller.connection.send_message(keys)
     def _multitouch_thread(self, caller):
+        while True:
+            mt_input = caller.queue.get()
+            if mt_input is not None:
+                print(mt_input.pos)
         pass
         # while True:
         #     touch_input = multitouch.input()
@@ -143,8 +152,9 @@ def build_layers(touch_layer, receiver_layer):
     return asyncio.gather(run_touch_layer(touch_layer), receiver_task)
 
 if __name__ == "__main__":
-    touch_layer = TouchLayer()
-    receiver_layer = CarPlayReceiver()
+    mt_queue = asyncio.Queue()
+    touch_layer = TouchLayer(mt_queue)
+    receiver_layer = CarPlayReceiver(mt_queue)
     loop = asyncio.get_event_loop()
     loop.run_until_complete(build_layers(touch_layer, receiver_layer))
     loop.close()
