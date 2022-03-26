@@ -76,7 +76,6 @@ class CarPlayReceiver:
         self.decoder = self._Decoder(self)
         self.audio_decoder = self._AudioDecoder(self)
         self.heartbeat = Thread(target=self._heartbeat_thread)
-        self.queue = mt_queue
         self.heartbeat.start()
     def _connected(self):
         print("Connected!")
