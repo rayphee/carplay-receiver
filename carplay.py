@@ -118,9 +118,28 @@ class CarPlayReceiver:
     def _multitouch_thread(self, caller):
         while True:
             try:
-                mt_input = MT_QUEUE.get_nowait()
-                if mt_input is not None:
+                mt_input = []
+                while not MT_QUEUE.empty():
+                    mt_input.append(MT_QUEUE.get_nowait())
+                if not mt_input.empty():
                     print("MT Thread, Touch Input: {}, Position: {}".format(mt_input[1], mt_input[0].pos))
+                    touches = protocol.MultiTouch()
+                    for t in mt_input:
+                        touch = protocol.MultiTouch.Touch()
+                        action = 0
+                        if t[1] == "up":
+                            action = 0
+                        elif t[1] == "down":
+                            action = 1
+                        else: # consider "move"
+                            action = 2
+                        # touch_data = struct.pack("<ffLL", t.pos.x, t.pos.y, action)
+                        # touch._setdata(touch_data)
+                        touch.x = t.pos.x * (1/8000000)
+                        touch.y = t.pos.y * (1/6000000)
+                        touch.action = action
+                        touches.touches.append(touch)
+                    caller.connection.send_message(touches)
             except queue.Empty:
                 pass
         pass
