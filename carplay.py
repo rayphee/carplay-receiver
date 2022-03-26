@@ -124,20 +124,20 @@ class CarPlayReceiver:
                 if mt_input:
                     touches = protocol.MultiTouch()
                     for t in mt_input:
-                        print("MT Thread, Touch Input: {}, Position: {}".format(t[1], t[0].pos))
                         touch = protocol.MultiTouch.Touch()
                         action = 0
                         if t[1] == "up":
-                            action = 0
+                            action = protocol.MultiTouch.Touch.Action.Up
                         elif t[1] == "down":
-                            action = 1
+                            action = protocol.MultiTouch.Touch.Action.Down
                         else: # consider "move"
-                            action = 2
+                            action = protocol.MultiTouch.Touch.Action.Move
                         # touch_data = struct.pack("<ffLL", t.pos.x, t.pos.y, action)
                         # touch._setdata(touch_data)
-                        touch.x = t[0].pos.x * (1/8000000)
-                        touch.y = t[0].pos.y * (1/6000000)
+                        touch.x = t[0].pos[0] * (10000/8)
+                        touch.y = t[0].pos[1] * (10000/6)
                         touch.action = action
+                        print("MT Thread, Touch Input: {}, Position: {}, {}".format(touch.action, touch.x, touch.y))
                         touches.touches.append(touch)
                     caller.connection.send_message(touches)
             except queue.Empty:
