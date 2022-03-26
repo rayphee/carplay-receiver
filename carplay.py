@@ -24,7 +24,13 @@ MT_QUEUE = queue.Queue() # I know, I hate globals too
 
 class TouchLayer(Widget):
     def on_touch_down(self, touch):
-        MT_QUEUE.put(touch)
+        MT_QUEUE.put((touch, 'down'))
+        # print(touch.pos)
+    def on_touch_move(self, touch):
+        MT_QUEUE.put((touch, 'move'))
+        # print(touch.pos)
+    def on_touch_up(self, touch):
+        MT_QUEUE.put((touch, 'up'))
         # print(touch.pos)
 
 class CarPlayReceiver:
@@ -114,7 +120,7 @@ class CarPlayReceiver:
             try:
                 mt_input = MT_QUEUE.get_nowait()
                 if mt_input is not None:
-                    print(mt_input.pos)
+                    print("MT Thread, Touch Input: {}, Position: {}".format(mt_input[1], mt_input[0].pos))
             except queue.Empty:
                 pass
         pass
