@@ -70,13 +70,9 @@ class CarPlayReceiver:
         self._disconnect()
         # self.server = self._Server(self)
         self.decoder = self._Decoder(self)
-        self.touch = self._Touch(self)
         self.audio_decoder = self._AudioDecoder(self)
         self.heartbeat = Thread(target=self._heartbeat_thread)
         self.heartbeat.start()
-    def build(self):
-        touch_layer = self._Touch()
-        return touch_layer
     def _connected(self):
         print("Connected!")
         self.started = True
@@ -84,7 +80,6 @@ class CarPlayReceiver:
         self.audio_decoder.stop()
         self.decoder = self._Decoder(self)
         self.audio_decoder = self._AudioDecoder(self)
-        self.touch = self._Touch(self)
     def _disconnect(self):
         if hasattr(self, "connection"):
             if self.connection is None:
