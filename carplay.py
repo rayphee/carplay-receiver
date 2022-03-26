@@ -5,6 +5,7 @@
 # See README.md for more information
 
 """Implementation of electric-monk's pycarplay for use with head-units"""
+import asyncio
 import decoder
 import audiodecoder
 import link
@@ -15,16 +16,14 @@ import queue
 import os
 import struct
 import kivy
-from kivy.app import App
+from kivy.app import App, async_runTouchApp
 from kivy.uix.widget import Widget
 
-class CarPlayReceiver(App):
-    class _Touch(Widget):
-        def __init__(self, owner):
-            super().__init__()
-            self._owner = owner
-        def on_touch_down(self, touch):
-            print(touch.pos)
+class TouchLayer(Widget):
+    def on_touch_down(self, touch):
+        print(touch.pos)
+
+class CarPlayReceiver:
     class _Decoder(decoder.Decoder):
         def __init__(self, owner):
             super().__init__()
@@ -116,7 +115,7 @@ class CarPlayReceiver(App):
         # while True:
         #     touch_input = multitouch.input()
         #     caller.connection.send_message(touch_input)
-    def run(self):
+    async def run(self):
         self.keylistener = Thread(target=self._keylistener_thread, args=(self,))
         self.multitouch = Thread(target=self._multitouch_thread, args=(self,))
         self.keylistener.start()
@@ -139,7 +138,18 @@ class CarPlayReceiver(App):
             print("Connection started!")
             # Third task: idle while connected
             while self.started:
-                time.sleep(1)
+                await asyncio.sleep(1)
+
+async def run_touch_layer(touch_layer):
+    await async_runTouchApp(touch_layer, async_lib='asyncio')
+
+def build_layers(touch_layer, receiver_layer):
+    receiver_task = asyncio.ensure_future(receiver_layer.run())
+    return asyncio.gather(run_touch_layer(touch_layer), receiver_task)
 
 if __name__ == "__main__":
-    CarPlayReceiver().run()
+    touch_layer = TouchLayer()
+    receiver_layer = CarPlayReceiver()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(build_layers(touch_layer, receiver_layer))
+    loop.close()
