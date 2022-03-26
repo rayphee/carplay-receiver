@@ -33,7 +33,7 @@ class Decoder:
 			self.shutdown = False
 
 		def run(self):
-			player = mpv.MPV(log_handler=self.owner.log, input_default_bindings=False, input_vo_keyboard=True, hwdec="rpi", demuxer_rawvideo_fps=60, fps=60)
+			player = mpv.MPV(log_handler=self.owner.log, input_default_bindings=False, input_vo_keyboard=True, hwdec="auto", demuxer_rawvideo_fps=60, fps=60)
 			self.owner.player = player
 		
 			@player.python_stream('carplay_video')
