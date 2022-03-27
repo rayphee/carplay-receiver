@@ -134,8 +134,8 @@ class CarPlayReceiver:
                             action = protocol.MultiTouch.Touch.Action.Move
                         # touch_data = struct.pack("<ffLL", t.pos.x, t.pos.y, action)
                         # touch._setdata(touch_data)
-                        touch.x = t[0].pos[0] * (10000/8)
-                        touch.y = t[0].pos[1] * (10000/6)
+                        touch.x = int(t[0].pos[0]) # * (1/800)
+                        touch.y = int(t[0].pos[1]) # * (1/600)
                         touch.action = action
                         print("MT Thread, Touch Input: {}, Position: {}, {}".format(touch.action, touch.x, touch.y))
                         touches.touches.append(touch)
@@ -178,9 +178,19 @@ def build_layers(touch_layer, receiver_layer):
     receiver_task = asyncio.ensure_future(receiver_layer.run())
     return asyncio.gather(run_touch_layer(touch_layer), receiver_task)
 
-if __name__ == "__main__":
-    touch_layer = TouchLayer()
-    receiver_layer = CarPlayReceiver()
+def async_main(touch_layer, receiver_layer):
     loop = asyncio.get_event_loop()
     loop.run_until_complete(build_layers(touch_layer, receiver_layer))
     loop.close()
+
+def threaded_main(touch_layer, receiver_layer):
+    touch_thread = Thread(target=touch_layer.run())
+    receiver_thread = Thread(target=receiver_layer.run())
+    touch_thread.start()
+    receiver_thread.start()
+
+if __name__ == "__main__":
+    touch_layer = TouchLayer()
+    receiver_layer = CarPlayReceiver()
+    # async_main(touch_layer, receiver_layer)
+    threaded_main(touch_layer, receiver_layer)
